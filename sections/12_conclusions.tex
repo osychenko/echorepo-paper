@@ -1,0 +1,16 @@
+\section{Conclusions}
+
+Large-scale citizen science creates a research-data management challenge that extends well beyond the initial collection of observations. In addition to storing participant-generated data, a durable infrastructure must support heterogeneous data types, imperfect records, provenance, privacy protection, subsequent professional enrichment and long-term publication.
+
+ECHOREPO addresses these requirements through an open-source architecture that separates the acquisition environment from the research-data repository and treats ingestion, canonicalisation, quality assurance, recovery, enrichment, privacy protection and FAIR-oriented publication as explicit stages of the data lifecycle.
+
+Its operational deployment with around 9,000 soil samples demonstrates that citizen-generated observations can be integrated with images, laboratory measurements and microbial biodiversity data while preserving a common sample identity. The same deployment also shows that repository-level quality assurance
+remains necessary after data collection and illustrates how retained
+provenance can be used to investigate and potentially recover problematic
+records.
+
+The experience further indicates that publication and interoperability should be designed as part of the research-data workflow rather than added as end-of-project activities. By generating stable machine-readable resources, applying explicit privacy transformations, assigning persistent identifiers and supporting external discovery, ECHOREPO separates the evolving operational repository from research products intended for long-term reuse.
+
+Several broader design principles emerge from this experience: preserve source context sufficiently to support later correction; maintain stable identifiers across the complete sample lifecycle; separate participant-facing acquisition systems from durable research repositories; represent privacy-related transformations explicitly; accommodate progressive enrichment by specialist analyses; and treat persistent publication and external interoperability as architectural concerns.
+
+ECHOREPO remains a soil-specific implementation, and its direct transfer to other scientific domains would require adaptation of the acquisition layer and canonical data model. The broader contribution of this work is therefore not a claim of universal software applicability, but a reusable architectural pattern and a set of operational lessons for transforming heterogeneous citizen-generated observations into quality-controlled, privacy-aware and FAIR-oriented research data.

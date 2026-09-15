@@ -1,0 +1,64 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{hyperref}\hypersetup{hidelinks}
+\usepackage{microtype}
+\usepackage{csquotes}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[
+    backend=biber,
+    style=authoryear,
+    maxcitenames=2
+]{biblatex}
+
+\addbibresource{references.bib}
+
+\title{
+%From citizen observations to FAIR research data:\\
+%ECHOREPO and a reusable architectural pattern for soil citizen science
+From citizen observations to FAIR research data:\\
+ECHOREPO and a reusable architecture for soil citizen science
+}
+
+\author{Oleg Osychenko et al.\\
+\small Provisional author list}
+
+\date{Internal draft -- September 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Citizen-science projects can generate large volumes of heterogeneous environmental data, but transforming these observations into durable research resources presents challenges that extend beyond data collection. Field observations may contain incomplete or erroneous information, geographical coordinates can raise privacy concerns, and citizen-generated records may subsequently need to be integrated with professional laboratory measurements, images, molecular biodiversity data and external research infrastructures. These requirements are often handled by project-specific pipelines that remain tightly coupled to the original data-collection application.
+
+This paper presents ECHOREPO, an open-source and containerised research-data infrastructure developed in the context of large-scale European soil citizen science. ECHOREPO separates the acquisition layer from long-term research-data management and provides a workflow for ingestion, canonicalisation, quality assurance, provenance preservation, privacy protection, heterogeneous data enrichment and FAIR-oriented publication. The infrastructure integrates citizen observations and images with laboratory measurements and microbial biodiversity data while maintaining a common sample identity. Its production deployment currently manages around 9,000 soil samples and approximately 100 GB of data, with microbial biodiversity accounting for most of the storage and computational requirements.
+
+Particular attention is given to problems encountered in operational citizen-science data, including erroneous or default coordinates, inconsistent observations and the need to recover rather than simply discard problematic records. ECHOREPO combines automated quality-control procedures with provenance-assisted recovery and geographical obfuscation mechanisms. Canonical research outputs are exposed through machine-readable interfaces and deposited in Zenodo with persistent identifiers and structured metadata, enabling subsequent discovery through the SoilWise infrastructure.
+
+Rather than presenting ECHOREPO solely as a soil-specific repository, we derive a set of architectural and operational lessons relevant to other citizen-science projects seeking to transform heterogeneous participant-generated observations into FAIR, privacy-aware and reusable research data.
+\end{abstract}
+
+\vspace{0.5cm} % Adds space between abstract and keywords
+\noindent \textbf{Keywords:} citizen science; FAIR data; research data infrastructure; soil monitoring; data quality; privacy; provenance; interoperability; open-source software
+
+
+\input{sections/01_introduction}
+\input{sections/02_system_context}
+\input{sections/03_architecture}
+\input{sections/04_data_model}
+\input{sections/05_data_quality}
+\input{sections/06_privacy}
+\input{sections/07_fair_publication}
+\input{sections/08_evaluation}
+\input{sections/09_reusability}
+\input{sections/10_lessons}
+\input{sections/11_limitations}
+\input{sections/12_conclusions}
+
+\printbibliography
+
+\end{document}

@@ -1,0 +1,117 @@
+\section{Reusability beyond soil citizen science}
+
+ECHOREPO combines general research-data infrastructure with components that are specific to soil monitoring and to the ECHO data-collection workflow. Reuse should therefore be understood at several levels. The complete platform is not intended to be transferred unchanged to an unrelated citizen-science domain; rather, the architecture separates components that are inherently domain-specific from infrastructure that can potentially be retained or adapted with comparatively limited modification.
+
+The most domain-specific element is the canonical research-data model. The current schema contains concepts such as soil pH, soil texture, soil structure, field observations, laboratory soil parameters and microbial biodiversity. A citizen-science project concerned with another environmental domain would therefore require a different canonical schema, while retaining the principle of representing a stable research object and associating observations, media and subsequent analytical enrichment with that object.
+
+The acquisition interface is similarly project-specific. ECHOREPO currently imports observations originating from the EchoSoil acquisition environment, but this dependency is isolated primarily within the ingestion and synchronisation layer. A deployment using another mobile application, web form or external database would require a corresponding source adapter capable of translating the source representation into the target canonical model. The downstream repository does not need to reproduce the source application's internal data model or authentication system.
+
+Other components are substantially less dependent on the scientific domain. These include containerised deployment, authentication and API access, relational and object storage, provenance-oriented ingestion, separation between source and canonical representations, publication-oriented exports, persistent dataset publication and versioning. Some quality-control and privacy mechanisms are also reusable at the architectural level, although individual validation rules and privacy policies must necessarily reflect the characteristics of the data being collected.
+
+The resulting separation can be represented conceptually as:
+
+\begin{verbatim}
+domain-specific acquisition system
+              |
+              v
+      source-specific adapter
+              |
+              v
+    domain-specific canonical model
+              |
+              v
+     QA and provenance layer
+              |
+              v
+   optional specialist enrichment
+              |
+              v
+  privacy and publication policies
+              |
+              v
+ generic access/publication services
+        |                |
+        v                v
+       API        persistent repository
+\end{verbatim}
+
+Table~\ref{tab:reusability} distinguishes components according to the expected degree of adaptation required for reuse in another citizen-science project.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Expected reuse and adaptation of major ECHOREPO components
+    in another citizen-science domain.}
+    \label{tab:reusability}
+    \begin{tabular}{p{0.29\textwidth} p{0.20\textwidth} p{0.43\textwidth}}
+        \toprule
+        Component & Expected adaptation & Rationale \\
+        \midrule
+
+        Acquisition adapter &
+        High &
+        Depends on the external collection system, its identifiers and
+        source-data representation. \\
+
+        Canonical data model &
+        High &
+        Scientific entities, observations and analytical parameters are
+        domain-specific. \\
+
+        Quality-control rules &
+        Moderate to high &
+        The QA framework can be retained, but validation rules depend on
+        the scientific domain and collection protocol. \\
+
+        Provenance mechanisms &
+        Low to moderate &
+        Source identifiers, ingestion history and relationships between
+        original and derived records are broadly applicable. \\
+
+        Privacy layer &
+        Moderate &
+        The mechanism is reusable, but disclosure risks and publication
+        policies differ between projects. \\
+
+        PostgreSQL and object storage &
+        Low &
+        General-purpose storage services are independent of the soil
+        application domain. \\
+
+        Authentication and API access &
+        Low &
+        Access-control mechanisms are largely independent of the scientific
+        data model. \\
+
+        Containerised deployment &
+        Low &
+        Docker-based deployment is independent of the acquisition system
+        and scientific domain. \\
+
+        Machine-readable publication &
+        Low to moderate &
+        Export and versioning mechanisms are reusable, while schemas,
+        metadata profiles and controlled vocabularies may require adaptation. \\
+
+        External discovery integration &
+        Moderate &
+        The publication pattern is reusable, although the appropriate
+        disciplinary catalogue or infrastructure may differ from SoilWise. \\
+
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+This decomposition suggests that reuse of ECHOREPO would normally involve replacing or adapting two principal interfaces: the acquisition adapter and the canonical domain model. The surrounding infrastructure can then provide common services for storage, provenance, access control, quality-assurance workflows, publication and deployment.
+
+The separation is also relevant within the ECHO deployment itself. The citizen-facing acquisition application uses an independent backend and authentication mechanism, whereas ECHOREPO maintains its own research-data representation and publication lifecycle. The fact that these systems operate independently provides practical evidence that the repository does not require the acquisition application to share its internal implementation.
+
+Nevertheless, the present study does not demonstrate a complete deployment of ECHOREPO in a second scientific domain. Consequently, the claim made here is one of \emph{architectural reusability} rather than experimentally demonstrated domain independence. A future deployment outside soil citizen science would provide a stronger test of how much adaptation is required in practice.
+
+The intended contribution is therefore not a completely domain-neutral
+citizen-science platform, but an open implementation of a reusable
+research-data pattern: source-specific acquisition is separated from a
+stable canonical representation, which is subsequently subjected to
+quality assurance, provenance management, privacy controls and persistent
+publication. This separation may be applicable to other citizen-science
+projects facing similar requirements for long-term and FAIR-oriented data
+management.

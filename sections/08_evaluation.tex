@@ -1,0 +1,236 @@
+\section{Evaluation}
+
+The evaluation of ECHOREPO focuses on its behaviour as an operational
+research-data infrastructure rather than on isolated software benchmarks.
+Four aspects are considered: the scale of the production deployment,
+the ability of the quality-assurance workflow to identify and recover
+problematic citizen-generated records, the generation and external
+publication of reusable research products, and the computational
+requirements associated with the different data domains.
+
+\subsection{Operational deployment scale}
+
+ECHOREPO has been operated as the research-data infrastructure supporting
+the ECHO soil citizen-science campaign. At the time of writing, the
+production repository contains around 9,000 soil samples collected
+across multiple European countries and manages approximately 100~GB of
+data.
+
+The different data domains have markedly different storage and processing
+requirements. Sample-level observations and laboratory parameters are
+relatively compact structured records, while images contribute larger
+binary objects. Microbial biodiversity is the dominant component in terms
+of both storage volume and computational requirements because individual
+samples may be associated with large numbers of taxonomic features and
+abundance measurements.
+
+Table~\ref{tab:deployment-scale} summarises the principal characteristics
+of the deployment.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Scale of the operational ECHOREPO deployment at the time of
+    evaluation. Values marked TODO will be generated directly from the
+    production repository before submission.}
+    \label{tab:deployment-scale}
+    \begin{tabular}{lr}
+        \toprule
+        Metric & Value \\
+        \midrule
+        Soil samples & $>10{,}000$ \\
+        Countries represented & [TODO] \\
+        Sample images & [TODO] \\
+        Laboratory parameter records & [TODO] \\
+        Samples with biodiversity data & [TODO] \\
+        Biodiversity features & [TODO] \\
+        Non-zero biodiversity abundance records & [TODO] \\
+        Total managed data volume & $\sim100$~GB \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+These figures are relevant to the architectural evaluation because the
+repository must accommodate substantially different workloads within the
+same sample-centred data lifecycle. In particular, the biodiversity
+component demonstrates that enrichment of an initially lightweight
+citizen-science observation can eventually produce datasets whose
+storage and processing requirements are substantially larger than
+the original field record.
+
+\subsection{Quality assurance and data recovery}
+
+The geographical quality-control analysis described in
+Section~\ref{sec:data-quality} provides the clearest quantitative
+evaluation of the QA workflow.
+
+In the analysed snapshot of 6,871 samples, 492 records (7.16\%) were
+classified as having problematic coordinates. These included 281 cases
+in which a country could not be determined from the recorded position,
+123 cases in which the inferred country did not correspond to the
+expected country, and 88 records containing known default coordinates.
+A further three records lacked the reference country information required
+for the corresponding validation procedure.
+
+The significance of these results is not limited to the error rate itself.
+They demonstrate that, even when a data-collection application performs
+validation at submission time, additional repository-level quality
+control remains necessary once observations are considered in their
+broader geographical and project context.
+
+The second component of the evaluation concerns the ability to recover
+records after an error has been detected. ECHOREPO retains sample
+identifiers, participant associations and other provenance information
+that can be used to reconstruct or correct information in cases where
+sufficient evidence is available.
+
+The final evaluation will distinguish the outcomes shown in
+Table~\ref{tab:recovery-results}.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Planned evaluation of recovery outcomes for records flagged
+    by the quality-assurance workflow.}
+    \label{tab:recovery-results}
+    \begin{tabular}{lrr}
+        \toprule
+        Outcome & Records & Percentage of flagged records \\
+        \midrule
+        Automatically recovered & [TODO] & [TODO] \\
+        Recovered after review & [TODO] & [TODO] \\
+        Retained but still flagged & [TODO] & [TODO] \\
+        Unresolved / unusable & [TODO] & [TODO] \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+This distinction is important because the performance of the QA system
+cannot be characterised solely by the number of errors it detects. From
+a research-data perspective, the more relevant question is how many
+scientifically useful records can ultimately be retained after the
+problem has been identified.
+
+The recovery rate will therefore be calculated as:
+
+\begin{equation}
+    R =
+    \frac{N_{\mathrm{recovered}}}
+         {N_{\mathrm{flagged}}}
+    \times 100\%,
+\end{equation}
+
+where $N_{\mathrm{flagged}}$ is the number of records identified as
+problematic and $N_{\mathrm{recovered}}$ is the subset for which a
+sufficiently supported correction can be established.
+
+\subsection{Publication and external interoperability}
+
+A further evaluation criterion is whether ECHOREPO can transform its
+operational data into research products that remain usable independently
+of the running application.
+
+The canonical publication workflow currently generates separate
+machine-readable resources describing samples, images, analytical
+parameters and biodiversity results, together with supporting definitions
+of parameters and analytical methods. The principal canonical resources
+are:
+
+\begin{itemize}
+    \item \texttt{samples.csv};
+    \item \texttt{sample\_images.csv};
+    \item \texttt{sample\_parameters.csv};
+    \item \texttt{sample\_biodiversity.csv};
+    \item \texttt{parameter\_definitions.csv}; and
+    \item \texttt{analysis\_methods.csv}.
+\end{itemize}
+
+These resources can be generated from the operational repository and
+retrieved through machine-oriented interfaces without relying on the
+interactive ECHOREPO web application.
+
+The publication workflow has additionally been exercised through Zenodo.
+Published releases receive persistent identifiers and form a versioned
+publication history, allowing a particular research-data release to be
+cited independently of the continuously evolving production database.
+The deposited resources are accompanied by structured metadata intended
+to support machine interpretation and external harvesting.
+
+The resulting interoperability chain has been demonstrated across
+multiple independently operated systems:
+
+\begin{verbatim}
+ECHOREPO
+    |
+    v
+canonical research resources
+    |
+    v
+Zenodo publication
+    |
+    v
+persistent identifier
+    |
+    v
+SoilWise discovery
+\end{verbatim}
+
+The ability of a dataset originating in ECHOREPO to be deposited in an
+external trusted repository and subsequently discovered through SoilWise
+provides an end-to-end test of the publication workflow. It demonstrates
+that access to the research products is not dependent on knowledge of
+ECHOREPO's internal database or web interface.
+
+For the final manuscript, this evaluation will record the corresponding
+Zenodo concept DOI, the publication version used for the evaluation, and
+the associated SoilWise catalogue record.
+
+\subsection{Operational performance and scalability}
+
+For the final manuscript, we also plan to characterise representative
+operational performance and scalability.
+
+ECHOREPO has been developed primarily to support an operational research
+workflow rather than as a high-performance data-processing platform.
+Nevertheless, representative processing measurements are useful for
+understanding the infrastructure required to reproduce the deployment.
+
+The final evaluation will therefore report representative execution times
+for several complete operations rather than micro-benchmarks of individual
+software components. These measurements will include:
+
+\begin{itemize}
+    \item ingestion and canonicalisation of citizen-science records;
+    \item generation of the complete canonical publication bundle;
+    \item ingestion or processing of a representative biodiversity dataset;
+    \item generation of biodiversity publication resources; and
+    \item the approximate storage contribution of the main data domains.
+\end{itemize}
+
+Measurements will be performed on the production or a representative
+deployment and will report the relevant hardware and software environment.
+Their purpose is not to compare ECHOREPO with alternative database
+technologies, but to provide prospective adopters with an indication of
+the resources required for deployments of comparable scale.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Representative operational performance measurements TO BE COMPLETED BEFORE SUBMISSION.}
+    \label{tab:performance}
+    \begin{tabular}{lrr}
+        \toprule
+        Operation & Data volume & Execution time \\
+        \midrule
+        Canonical sample export & [TODO] & [TODO] \\
+        Complete canonical bundle & [TODO] & [TODO] \\
+        Biodiversity ingestion & [TODO] & [TODO] \\
+        Biodiversity export & [TODO] & [TODO] \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+Taken together, these evaluations address different aspects of the
+infrastructure. Deployment scale establishes that ECHOREPO has been used
+beyond a prototype setting; the QA analysis evaluates its handling of
+imperfect citizen-generated data; the publication workflow demonstrates
+that internal records can be transformed into independently discoverable
+research products; and the operational measurements provide information
+about the resources required to reproduce the approach.

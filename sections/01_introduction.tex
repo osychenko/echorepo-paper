@@ -1,0 +1,62 @@
+\section{Introduction}
+
+% Citizen science increasingly contributes to environmental monitoring by enabling observations to be collected across geographical and temporal scales that would be difficult to achieve using professional monitoring alone. Soil monitoring is particularly well suited to participatory approaches because many relevant observations can be made in the field using relatively simple protocols, while physical samples can subsequently be subjected to professional laboratory or molecular analysis.
+Citizen science has become an established approach for collecting
+scientific observations across spatial and temporal scales that would
+often be difficult to achieve using professional monitoring alone
+\parencite{bonney2009citizenscience,bonney2014nextsteps}.
+
+The resulting data lifecycle, however, is considerably more complex than the collection stage alone suggests. A participant may create a soil observation containing geographical coordinates, photographs and qualitative or semi-quantitative measurements. The corresponding physical sample may later undergo laboratory analysis, while a subset of samples may additionally be processed for microbial biodiversity. These data are produced at different times, by different actors and through different technical systems, yet they ultimately need to remain associated with the same research object.
+
+Citizen-generated environmental data also introduce practical data-quality problems. Coordinates may be missing, implausible or inadvertently replaced by defaults; values may be incomplete or inconsistent; observations may be produced using different devices and languages; and the precise geographical information associated with a sample may need to be protected before public dissemination. Importantly, a quality-control system that merely removes problematic observations can result in unnecessary loss of potentially recoverable data.
+
+These requirements suggest that a citizen-science data repository should not be treated simply as the backend database of a mobile or web application. The participant-facing acquisition system and the long-term research-data infrastructure have different requirements and lifecycles. Acquisition software may change technologies, authentication systems or interfaces during a project, whereas research data must remain identifiable, traceable, quality controlled and reusable beyond the lifetime of the collection application.
+
+Existing citizen-science infrastructures demonstrate different approaches
+to managing this data lifecycle. CitSci.org provides configurable tools
+for data collection, quality assurance, metadata documentation and data
+sharing, with an explicit focus on improving the discoverability and reuse
+of citizen-generated datasets \parencite{wang2015citsci}. Large-scale
+systems such as eBird similarly demonstrate that citizen-science
+infrastructure can extend beyond data acquisition to include curation,
+quality control, analysis and open data delivery
+\parencite{sullivan2014ebird}. ECHOREPO addresses a related but distinct
+infrastructure problem: the long-term research repository is deliberately
+decoupled from the participant-facing acquisition system and must integrate
+citizen observations with subsequently generated laboratory and molecular
+data while supporting provenance, privacy controls and publication aligned with the FAIR principles
+of findability, accessibility, interoperability and reusability
+\parencite{wilkinson2016fair}.
+
+The specific challenge addressed here is therefore not citizen-science
+data collection itself, but the construction of an independent research
+repository that can receive participant-generated records from an
+external acquisition system and subsequently integrate them with
+professional analytical data while supporting QA, privacy and persistent
+publication.
+
+We developed ECHOREPO to address these requirements in the context of European soil citizen science. ECHOREPO is an open-source, containerised platform for browsing, processing, enriching and publishing soil observations. Its current implementation provides PostgreSQL-backed canonical storage, map-oriented exploration, laboratory and biodiversity data integration, API and machine-readable exports, object storage, authentication, multilingual support and privacy and quality-control mechanisms. The software is released under the MIT License, allowing reuse and adaptation beyond the original project.
+
+The central design principle is decoupling between acquisition and research-data management. The participant-facing mobile application uses an independent Firebase-based backend and authentication mechanism, while ECHOREPO maintains its own ingestion, canonicalisation, storage, access-control and publication infrastructure. This separation allows the acquisition system to evolve independently while maintaining a stable research-data layer.
+
+This paper addresses four questions:
+
+\begin{enumerate}
+    \item How can a citizen-science research infrastructure remain
+    decoupled from the data-acquisition application while supporting
+    long-term data management?
+
+    \item How can heterogeneous citizen observations, images, laboratory
+    measurements and molecular biodiversity data be integrated while
+    preserving provenance and a common sample identity?
+
+    \item What data-quality and privacy challenges emerge in a large-scale
+citizen-science deployment, and how can they be detected and mitigated,
+while allowing recoverable data-quality problems to be corrected?
+
+    \item How can the resulting research products be made persistently
+    identifiable and discoverable through external FAIR data
+    infrastructures?
+\end{enumerate}
+
+Using the operational ECHOREPO deployment as a case study, we describe the architecture, data lifecycle, quality-control and recovery mechanisms, privacy model and publication workflow, and derive lessons that may be applicable to other citizen-science projects.

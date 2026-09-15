@@ -1,0 +1,42 @@
+\section{Privacy and geographical obfuscation}
+
+Geographical information is important for environmental research because it enables observations to be associated with environmental, climatic and land-use context. In citizen science, however, precise coordinates may also disclose information about participants or sampling locations, particularly when observations are made on or near private property. ECHOREPO therefore treats geographical quality control and geographical publication as two separate stages of the data lifecycle.
+
+Where available and operationally required, the repository first retains the best available source location in the controlled data-processing environment. Quality-assurance procedures are applied to this representation before any privacy transformation is performed. This ordering is important because an erroneous source coordinate should, where possible, be corrected before generating the public representation of the location.
+
+For public dissemination, ECHOREPO uses spatial obfuscation rather than exposing the original sampling coordinates directly. In the current implementation, public coordinates are spatially jittered according to a configurable obfuscation radius. The production configuration uses a default radius of 1,000~m. The resulting coordinates therefore represent an approximate sampling location rather than the precise point recorded during data acquisition.
+
+Importantly, the reduction in spatial precision is made explicit in the published data model. The canonical sample resource includes the field
+\texttt{coordinate\_obfuscation\_radius\_m}, which describes the spatial obfuscation applied to the published coordinate. Downstream users can therefore distinguish an intentionally displaced public location from a measurement with metre-level positional accuracy.
+
+Conceptually, the processing sequence is:
+
+\begin{verbatim}
+source coordinate
+       |
+       v
+geographical validation
+       |
+       +---- problematic --> recovery / correction
+       |                         |
+       |                         v
+       +----------------> best available location
+                                  |
+                                  v
+                          privacy transformation
+                                  |
+                                  v
+                         public coordinate
+                                  +
+                    obfuscation radius metadata
+\end{verbatim}
+
+This ordering separates two conceptually different operations. Quality assurance attempts to determine the most reliable geographical information available for a sample, whereas privacy protection determines how much of that information should subsequently be exposed. Consequently, correcting a coordinate does not imply that the corrected exact position must be published.
+
+The approach aims to preserve sufficient geographical utility for regional-scale exploration and environmental analysis while reducing disclosure of exact sampling locations. It should not, however, be interpreted as a formal guarantee of anonymity. The appropriate obfuscation distance depends on the sensitivity of the data, the spatial scale of the intended analyses and the possibility of combining the published coordinates with other information.
+
+Geographical obfuscation forms part of a broader separation between operational and public data in ECHOREPO. Personally identifying participant information is excluded from the public canonical research products, ... and image-processing workflows remove or suppress embedded image
+metadata, such as EXIF geolocation information, that could unintentionally
+disclose precise locations. Public research outputs therefore expose the scientific information required for reuse while suppressing information that is not necessary for that purpose.
+
+Maintaining provenance internally also allows privacy protection to coexist with later data correction. If a location problem is discovered after ingestion, the underlying record can be reassessed using available sample and participant provenance, after which a new privacy-preserving public representation can be generated. Privacy transformation is therefore treated as a publication-layer operation rather than an irreversible modification of the underlying scientific record.

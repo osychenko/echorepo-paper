@@ -1,0 +1,41 @@
+\section{System context and design requirements}
+
+ECHOREPO was developed within the ECHO project
+(\emph{Engaging Citizens in soil science: the road to Healthier sOils}),
+funded under Grant Agreement No.~101112869. The project runs from
+June 2023 to May 2027 and investigates citizen participation in soil
+health monitoring across Europe. ECHO combines citizen-generated field
+observations with subsequent scientific analysis and research-data
+management, with the aim of supporting long-term use and reuse of the
+resulting soil information \parencite{echo2023project}.
+
+Within ECHO, ECHOREPO supports a large-scale European soil
+citizen-science workflow in which the data-acquisition system and the
+long-term research repository are separate components. Citizen
+participants collect soil observations through the EchoSoil mobile
+application, which records field observations, geographical coordinates
+and images and uses its own Firebase-based backend and authentication
+mechanisms.
+
+Within this workflow, the EchoSoil mobile application provides the
+participant-facing data-acquisition environment, while ECHOREPO provides
+the research-data management, enrichment and publication layer.
+
+ECHOREPO is deliberately decoupled from this acquisition environment. Rather than depending on the internal database structure or identity-management system of the mobile application, it receives data through dedicated ingestion and synchronisation processes. During ingestion, participant and sample identifiers are resolved where necessary, incoming records are validated and harmonised, and the resulting information is transformed into a canonical research-data representation.
+
+This separation establishes a clear boundary between data acquisition and research-data management. The collection application can therefore evolve independently, while ECHOREPO provides a stable layer for quality assurance, enrichment, storage, controlled access and long-term publication. The same sample can subsequently be associated with additional resources produced outside the citizen-facing application, including laboratory measurements and microbial biodiversity data.
+
+At the time of writing, the production deployment contains around 9,000 soil samples and manages approximately 100~GB of data. Most of the storage volume and a substantial share of the computational workload are associated with microbial biodiversity data, whereas the core citizen-observation dataset and its associated images and laboratory metadata are considerably smaller.
+
+The principal design requirements derived from this operational context were:
+
+\begin{itemize}
+    \item independence from the internal implementation of the data-acquisition application;
+    \item preservation of stable sample identity across multiple stages of the data lifecycle;
+    \item support for heterogeneous resources, including field observations, images, laboratory measurements and biodiversity data;
+    \item preservation of traceability between source data and canonical research products;
+    \item detection, classification and, where possible, recovery of citizen-generated data-quality problems;
+    \item protection of sensitive geographical information prior to public dissemination;
+    \item machine-readable access and support for long-term data publication; and
+    \item reproducible deployment based on open-source and containerised components.
+\end{itemize}

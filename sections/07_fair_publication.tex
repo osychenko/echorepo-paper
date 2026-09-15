@@ -1,0 +1,133 @@
+\section{FAIR-oriented publication and interoperability}
+
+ECHOREPO distinguishes between its operational database structures and the
+research products intended for external reuse. Internal database tables are
+optimised for ingestion, validation, enrichment and application-level access,
+whereas public outputs are generated as stable, machine-readable canonical
+resources with documented schemas. This separation reduces the dependency of
+external users on the internal implementation of the operational repository.
+
+The publication layer exposes sample observations, images, analytical
+parameters and biodiversity data as separate but related resources. These
+outputs use persistent sample identifiers and include information such as
+licensing, units, analytical methods and provenance-related fields where
+applicable. Supporting definition tables provide additional descriptions of
+parameters and analytical procedures. As a result, the internal data model can
+continue to evolve without requiring downstream users to depend directly on the
+operational database schema.
+
+Canonical resources are made available through machine-oriented download
+interfaces and are also packaged for long-term publication. The canonical
+ECHOREPO dataset is published on Zenodo as a versioned research object
+\parencite{echorepo2026dataset}. Individual releases receive persistent digital
+object identifiers (DOIs), while structured metadata describe the dataset and,
+where applicable, the individual tabular resources and their fields.
+
+The publication workflow can be summarised as follows:
+
+\begin{verbatim}
+ECHOREPO operational data
+          |
+          v
+canonical research resources
+          |
+          v
+schema and metadata generation
+          |
+          v
+machine-readable publication package
+          |
+          v
+Zenodo deposition and versioning
+          |
+          v
+persistent identifiers
+          |
+          v
+external harvesting and discovery
+          |
+          v
+SoilWise and other research users
+\end{verbatim}
+
+This workflow is intended to ensure that ECHOREPO data remain usable
+independently of the repository's interactive web interface. A researcher or
+external infrastructure can retrieve the published resources directly,
+interpret their structure from accompanying metadata and documentation, and
+relate records across resources using stable identifiers.
+
+Interoperability with the wider European soil-data ecosystem is particularly
+important in the context of ECHO. ECHOREPO publication packages are structured
+to support discovery through SoilWise, which provides a common access and
+discovery layer for soil-related research resources. For Mission Soil
+resources, SoilWise recommends publication through trustworthy digital
+repositories such as Zenodo and subsequently harvests the associated metadata
+for discovery \parencite{soilwise2026faq}. In this model, ECHOREPO is
+responsible for producing and publishing well-described research objects,
+whereas broader infrastructures such as SoilWise provide aggregation and
+cross-project discovery.
+
+The implemented mechanisms can be related to the FAIR principles
+\parencite{wilkinson2016fair}, as summarised in
+Table~\ref{tab:fair-evidence}.
+
+\begin{table}[htbp]
+    \centering
+    \caption{FAIR-oriented mechanisms implemented in the ECHOREPO publication
+    workflow.}
+    \label{tab:fair-evidence}
+    \begin{tabular}{p{0.15\textwidth} p{0.77\textwidth}}
+        \toprule
+        Principle & ECHOREPO implementation and evidence \\
+        \midrule
+
+        Findable &
+        Persistent identifiers for published releases, structured metadata,
+        indexing in Zenodo, and discovery through external infrastructures
+        such as SoilWise. \\
+
+        Accessible &
+        Machine-readable resources available through HTTPS-based download
+        interfaces and persistent repository records; access conditions are
+        explicitly defined for public and restricted resources. \\
+
+        Interoperable &
+        Stable tabular schemas, explicit sample identifiers, documented units
+        and analytical methods, and structured metadata intended for processing
+        by systems other than the ECHOREPO web application. \\
+
+        Reusable &
+        Explicit licensing, provenance-related information, documented data
+        fields, versioned releases, and preservation of relationships between
+        samples and derived or enriched resources. \\
+
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+A key design choice is that FAIR-oriented publication is treated as part of the
+normal data lifecycle rather than as a one-time export at the end of the
+project. Canonical resources can be regenerated as the repository evolves,
+while Zenodo versioning provides a persistent publication history. This
+supports the coexistence of an actively maintained operational repository with
+stable research objects that can be cited and reused independently.
+
+Zenodo maintains both version-specific and concept-level persistent
+identifiers, allowing individual releases or the evolving dataset as a whole to
+be cited \parencite{zenodo2026versioning}. This distinction is useful for an
+actively maintained resource such as ECHOREPO: a particular analysis can cite
+the exact dataset version used, while the concept-level identifier can refer to
+the dataset across successive releases.
+
+The use of persistent identifiers and an external repository is important, but
+it is not sufficient on its own to establish that a dataset is fully FAIR.
+ECHOREPO is therefore described here as \emph{FAIR-oriented}. The degree to
+which the published resources satisfy individual FAIR principles depends on
+several factors, including metadata completeness, use of controlled
+vocabularies, semantic mappings, access conditions and the ability of external
+systems to interpret the published schemas.
+
+For this reason, the evaluation presented later in the paper considers
+FAIRness in terms of concrete implemented mechanisms and external
+interoperability outcomes rather than treating FAIR compliance as a binary
+property.

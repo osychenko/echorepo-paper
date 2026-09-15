@@ -1,0 +1,67 @@
+\section{Data quality in operational citizen science}
+\label{sec:data-quality}
+
+An important lesson from operating ECHOREPO has been that citizen-generated environmental data require quality-control mechanisms that are not only automated, but also recovery-aware. In a distributed citizen-science campaign, erroneous records cannot always be prevented at the point of collection, and automatically rejecting every record that fails a validation rule may lead to unnecessary loss of otherwise valuable observations.
+Data quality is consequently a recurring concern in citizen-science
+projects, although appropriate validation, training and quality-assurance
+procedures can produce scientifically useful datasets
+\parencite{kosmala2016quality}.
+
+In ECHOREPO, geographical information has provided a particularly useful case for developing this approach. Automated quality checks compare recorded coordinates with contextual information available for the sample, including the expected country where such information is available. They also detect coordinates corresponding to known default values and cases in which a geographical position cannot be reliably associated with a country.
+
+A quality-assurance snapshot comprising 6,871 sample records identified 492 records (7.16\%) with coordinates classified as problematic. The detected cases consisted of 281 records for which a country could not be determined from the recorded coordinates, 123 records for which the inferred country did not match the expected country, and 88 records containing known default coordinates. Three additional records lacked planned-country information for their associated sample identifier and could therefore not undergo the same country-based validation. The distribution of QA outcomes is summarised in Table~\ref{tab:coordinate-qa}.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Geographical quality-control outcomes in an operational ECHOREPO data snapshot ($n=6{,}871$). Percentages are relative to the complete snapshot and are rounded to two decimal places.}
+    \label{tab:coordinate-qa}
+    \begin{tabular}{lrr}
+        \toprule
+        QA outcome & Records & Percentage \\
+        \midrule
+        No geographical issue detected & 6,376 & 92.79\% \\
+        Country could not be determined & 281 & 4.09\% \\
+        Recorded and expected country mismatch & 123 & 1.79\% \\
+        Known default coordinates & 88 & 1.28\% \\
+        No planned country available for validation & 3 & 0.04\% \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+The first three error categories account for the 492 records marked as having problematic coordinates. The three records without planned-country information represent a different condition: the recorded coordinates were not necessarily incorrect, but one of the reference values required for the corresponding validation could not be established.
+
+A central principle of the ECHOREPO quality-control workflow is that a failed validation check does not automatically make a sample unusable. The repository retains identifiers and provenance that can be used to investigate and, where sufficient information exists, recover problematic records. Depending on the case, this may include the sample or QR identifier, the participant associated with the sample, campaign or allocation information, expected sampling geography, and the original source record.
+
+This is particularly relevant for coordinate errors. A sample with invalid or default coordinates may still contain valid field observations, photographs and subsequently generated laboratory data. If the sample can be reliably linked through its identifier or participant provenance to additional contextual information, its geographical information may be corrected or reconstructed without discarding the remaining scientific record.
+
+The resulting QA process can be represented conceptually as follows:
+
+\begin{verbatim}
+incoming record
+      |
+      v
+automated QA
+      |
+      +---- valid ------------------> canonical dataset
+      |
+      +---- flagged
+              |
+              v
+        classify failure
+              |
+              v
+      provenance-assisted assessment
+           /       |        \
+          /        |         \
+     recovered   reviewed   unresolved
+          |
+          v
+   canonical dataset
+   with QA provenance
+\end{verbatim}
+
+This distinction between \emph{detection} and \emph{recovery} is important in citizen-science data management. A strict filtering strategy can improve the apparent cleanliness of a dataset, but may also discard observations whose defects affect only part of the record and can be corrected using existing provenance. ECHOREPO therefore treats quality assurance as a process of identifying, classifying and, where possible, resolving data-quality problems while preserving the relationship to the original submitted information.
+
+The same principle extends beyond geographical information. Validation and harmonisation procedures are also required for incomplete values, inconsistent representations and heterogeneous observations produced by different participants and acquisition contexts. However, geographical QA currently provides the clearest quantitatively characterised example and is therefore used here to evaluate the operational behaviour of the recovery-aware approach.
+
+Quantifying the effectiveness of recovery itself requires distinguishing between automatically corrected, manually reviewed and unresolved cases. These outcomes will be reported separately in the evaluation section, allowing the effectiveness of the recovery procedures to be assessed independently from the ability of the QA layer to detect problematic records.

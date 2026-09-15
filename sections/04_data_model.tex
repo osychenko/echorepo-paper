@@ -1,0 +1,47 @@
+\section{Sample-centred integration of heterogeneous data}
+
+ECHOREPO uses the soil sample as the principal entity linking heterogeneous data produced at different stages of the citizen-science workflow. Each sample is assigned a stable identifier that is retained throughout ingestion, enrichment, quality control and publication. This identifier provides the common reference needed to associate participant-generated observations with images, laboratory measurements and microbial biodiversity data.
+
+The initial record is created during citizen participation and may contain field observations, geographical information, qualitative or semi-quantitative measurements, and photographs. Subsequent stages of the project can enrich the same sample with data generated outside the citizen-facing application. Laboratory analyses add quantitative analytical parameters, while molecular analyses introduce substantially larger biodiversity datasets, including taxonomic abundance data derived from markers such as 16S and ITS.
+
+These data types differ considerably in structure, scale and provenance. Field observations typically consist of a relatively small number of attributes associated directly with the sample. Images are stored as separate digital objects with their own metadata. Laboratory analyses produce multiple parameter--value observations per sample, potentially using different analytical methods and units. Biodiversity analyses may generate thousands of taxonomic features and abundance measurements for a single sample. Representing all of these resources in a single flattened table would therefore introduce substantial duplication and would make provenance, schema evolution and specialist processing more difficult.
+
+ECHOREPO instead represents the different data domains as related resources connected through the stable sample identifier. In the canonical publication model, these are exposed as separate machine-readable datasets for sample-level observations, images, laboratory parameters and biodiversity results. Supporting definition tables describe analytical parameters and methods where applicable. This relational organisation allows each data domain to evolve independently while preserving the ability to reconstruct the complete set of information associated with a sample.
+
+The current canonical publication layer therefore follows the general structure:
+
+\begin{itemize}
+    \item \texttt{samples.csv}, containing sample-level citizen observations and geographical information;
+    \item \texttt{sample\_images.csv}, describing images associated with samples;
+    \item \texttt{sample\_parameters.csv}, containing laboratory and analytical measurements;
+    \item \texttt{sample\_biodiversity.csv}, containing sample-associated
+        microbial biodiversity results;
+    \item \texttt{parameter\_definitions.csv}, describing canonical analytical
+        parameters; and
+    \item \texttt{analysis\_methods.csv}, describing analytical methods.
+\end{itemize}
+
+The sample-centred model is particularly important because the lifecycle of a citizen-science record does not end when the participant submits an observation. Instead, a sample may progressively acquire additional scientific information as it moves through the project:
+
+\begin{verbatim}
+citizen observation
+        |
+        v
+field measurements + images
+        |
+        v
+physical soil sample
+        |
+        v
+laboratory analysis
+        |
+        v
+microbial biodiversity analysis
+        |
+        v
+published research resource
+\end{verbatim}
+
+These stages may occur at different times and may be performed by different organisations. Consequently, ECHOREPO must preserve not only the identity of the sample but also the provenance of the associated resources. Source files, ingestion metadata, analysis methods and timestamps are therefore retained where available, allowing published values to be traced back to the processes that produced them.
+
+This approach also separates the logical identity of the research object from any particular acquisition or analytical system. The same sample identifier can link data originating from the citizen-facing application, laboratory workflows and biodiversity-processing pipelines, even though these systems use different data structures and operate independently. The result is a progressively enriched research object rather than a sequence of disconnected datasets.
