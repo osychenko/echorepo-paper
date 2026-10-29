@@ -39,14 +39,14 @@ ECHOREPO and a reusable architecture for soil citizen science}
 \maketitle
 
 \begin{abstract}
-Citizen-science observations often acquire scientific value beyond their original collection context, yet long-term management requires integration with later analytical results, assessment of imperfect records, protection of sensitive locations and independent publication. We present \repo, an open-source research-data infrastructure developed for European soil citizen science. The system separates an external participant-facing application from a canonical sample-centred repository, linking observations and photographs to laboratory measurements and microbial biodiversity data. It combines provenance-aware quality assurance with controlled publication views and exports relational tabular resources accompanied by CSV on the Web (CSVW) metadata. In a geographical quality-assurance snapshot, 492 of 6,868 assessable samples (7.16\%) were flagged for coordinate-related problems, illustrating the need for repository-level checks after submission. A published Zenodo dataset demonstrates versioned release of machine-readable resources independently of the operational application. We discuss the design choices and remaining limitations, particularly the distinction between detection and verified recovery, the privacy--utility trade-off in spatial obfuscation, and the boundary between soil-specific and reusable infrastructure components.
+Citizen-science observations often acquire scientific value beyond their original collection context, yet long-term management requires integration with later analytical results, assessment of imperfect records, protection of sensitive locations and independent publication. We present \repo, an open-source research-data infrastructure developed for European soil citizen science. The system separates an external participant-facing application from a canonical sample-centred repository, linking observations and photographs to laboratory measurements and microbial biodiversity data. It combines provenance-aware quality assurance with controlled publication views and exports relational tabular resources accompanied by CSV on the Web (CSVW) metadata. In a canonical snapshot of 10,554 soil samples, 8,744 (82.85\%) had associated photographs, 6,443 (61.05\%) laboratory measurements and 1,200 (11.37\%) biodiversity results; 5,514 (52.25\%) were linked to at least two additional data domains. Geographical and allocation-related quality assessment flagged 396 samples (3.75\%): 95 had application-default coordinates and 301 showed a discrepancy between the QR-code planned country and the recorded sampling country. These discrepancies are not necessarily geographical errors. A published Zenodo dataset demonstrates versioned release of machine-readable resources independently of the operational application. We discuss the design choices and remaining limitations, particularly the distinction between detection and verified recovery, the privacy--utility trade-off in spatial obfuscation, and the boundary between soil-specific and reusable infrastructure components.
 \end{abstract}
 \noindent\textbf{Keywords:} citizen science; FAIR data; soil monitoring; research-data infrastructure; quality assurance; privacy; provenance; interoperability.
 
 \section{Introduction}
 Citizen science enables environmental observations across spatial and temporal scales that are difficult to cover through professional surveys alone \parencite{bonney2009citizenscience,bonney2014nextsteps}. In soil monitoring, participation may also strengthen public engagement and stewardship \parencite{peiro2026soil}. However, the research-data lifecycle often extends beyond the initial observation: physical soil samples can be analysed by laboratories, photographs require management as separate objects, and microbial sequencing produces heterogeneous outputs with different structures and provenance.
 
-Participant-generated data also contain inaccuracies. Coordinates may be missing, recorded at default locations or inconsistent with the expected sampling area; measurements may be incomplete or non-standardised. Public dissemination introduces further requirements, particularly when precise locations or identifiable image content could expose participants. Discarding an entire record because of one defective field may unnecessarily lose otherwise useful scientific evidence.
+Participant-generated data can also contain inaccuracies. Coordinates may be unavailable or replaced by application defaults, and the actual sampling country can differ from the country originally assigned to a QR-coded kit without implying that the recorded location is wrong. Measurements may be incomplete or non-standardised. Public dissemination introduces further requirements, particularly when precise locations or identifiable image content could expose participants. Discarding an entire record because of one defective field may unnecessarily lose otherwise useful scientific evidence.
 
 Established systems such as CitSci.org and eBird show how citizen-science services can support curation, quality assurance and data sharing \parencite{wang2015citsci,sullivan2014ebird}. Our focus is a complementary design problem: how to preserve a stable, reusable research representation when the participant-facing acquisition application and subsequent analytical systems are operationally independent.
 
@@ -132,10 +132,15 @@ In the published table relations, \code{sample\_id} connects the sample-associat
 
 Laboratory enrichment may include X-ray fluorescence (XRF) measurements of elemental composition and microbial biodiversity information derived from 16S rRNA gene and internal transcribed spacer (ITS) amplicon sequencing. These outputs may arrive later and from different organisations. Retaining source identifiers, methods, source-file references and relevant timestamps makes progressively enriched records traceable without imposing one uniform representation on heterogeneous analyses.
 
-\subsection{Quality assurance and provenance-assisted assessment}
-The quality-assurance (QA) workflow first checks incoming records and classifies failures instead of deleting entire samples. Geographical checks use the underlying recorded coordinates: coordinates may be unassignable to a country, inconsistent with an expected sampling country, or equal to known application-default values. The corresponding record is flagged for assessment; any defensible correction should be supported by provenance such as QR/sample identity, sample-allocation information, source observations or protected participant-related context. When that evidence is insufficient, the record remains qualified or unresolved rather than being silently corrected. QA is therefore separated into detection, investigation and a possible recovery decision.
+\subsection{Evaluation metrics and data scope}
+Data-domain coverage was calculated from one dated canonical ZIP export. The denominator is the number of distinct non-empty \code{sample\_id} values in \code{samples.csv}. For each of the three supplementary domains (photographs, laboratory parameters and biodiversity), a sample is counted once if at least one row with the same identifier appears in the corresponding canonical CSV. The number of domains associated with each sample is then counted from zero to three; repeated measurements, images or taxonomic rows do not inflate sample coverage. The figures consequently describe the \emph{published canonical representation}, not the number of images, laboratory determinations, sequencing reads or planned analyses. The laboratory canonicalisation excludes oxide-form parameter rows and values below its default export threshold of 0.01; biodiversity coverage concerns exported taxonomic summaries rather than raw marker-by-feature matrices.
 
-The reasons for geographical anomalies cannot be established from these categories alone. Plausible contributors include mobile-device positioning problems, default coordinates supplied by the application, interrupted collection workflows and human data-entry errors. Attribution to a specific device or software defect would require independent diagnostics, such as application logs and validated source histories. Work on citizen-science data quality similarly stresses contextual validation and documented quality-assurance procedures \parencite{kosmala2016quality}.
+The QA tally separately classifies application-default coordinates and discrepancies between a QR code's planned allocation country and the recorded country of collection. These are screening classes, not a ground-truth classification of coordinate errors. Country comparison is performed using source-side information, not privacy-displaced public map coordinates. The percentages reported for QA below use the canonical sample count as denominator, subject to confirmation that the QA tally covers precisely the same snapshot.
+
+\subsection{Quality assurance and provenance-assisted assessment}
+The quality-assurance (QA) workflow flags inconsistent source records while retaining their sample identifiers and provenance. The present assessment distinguishes two classes. First, \emph{application-default coordinates} are placeholder positions recorded when the mobile workflow does not obtain a usable location; they cannot be treated as measured sampling positions. Second, a \emph{planned-country mismatch} occurs when the country assigned to a QR code for sample distribution differs from the country associated with its actual recorded collection location. This comparison is independent of the jittered public map coordinates. A planned-country mismatch can arise from a legitimate cross-country redistribution of sampling kits, outdated allocation metadata or an inaccurate location; it does not alone establish an erroneous GPS record.
+
+Flagged records can be investigated using the QR/sample identifier, kit-allocation history, source observations and other appropriately protected provenance. A correction should be made only when supported by evidence; otherwise the flag remains unresolved or qualified rather than being silently overwritten. Thus, detection, interpretation and verified recovery are distinct stages. The classification cannot by itself identify causes such as device malfunction, participant error or workflow interruption, and recovery outcomes were not measured in this evaluation \parencite{kosmala2016quality}.
 
 \subsection{Geographical privacy and image protection}
 Exact source coordinates are retained in the controlled-access environment and assessed for QA before deriving public positions. Public sample coordinates are deterministically displaced within a configurable maximum distance, currently 1,000~m by default. This is a pragmatic compromise intended to reduce precision around individual properties while maintaining regional-scale utility; it is \emph{not} a formally validated anonymity threshold. The field \code{coordinate\_obfuscation\_radius\_m} documents the configured radius in the published sample table.
@@ -151,9 +156,10 @@ Displacement is not constrained to coastlines or administrative boundaries. Cons
   decision/.style={draw=black!65,diamond,aspect=2,fill=orange!9,align=center,inner sep=1pt},
   smallblock/.style={draw=black!65,rounded corners=3pt,fill=green!8,align=center,minimum width=3.25cm,minimum height=.83cm}]
 \node[block] (src) at (0,0) {Source coordinate};
-\node[block] (qa) at (3.6,0) {Geographical QA\\on exact coordinate};
+\node[block] (qa) at (3.6,0) {Coordinate and allocation\\QA on source information};
 \node[decision] (flag) at (7.2,0) {Flagged?};
-\node[smallblock] (assess) at (7.2,-2.0) {Provenance-assisted\\assessment / qualification};
+\node[smallblock] (assess) at (7.2,-2.0) {Provenance-assisted\\assessment};
+\node[smallblock] (unresolved) at (7.2,-4.05) {Location unresolved:\\retain flag / restrict spatial output};
 \node[block] (best) at (10.7,0) {Best-supported\\protected location};
 \node[block] (jitter) at (14.3,0) {Deterministic jitter\\($\leq$ 1,000 m default)};
 \node[smallblock] (out) at (14.3,-2.0) {Public coordinates\\and radius metadata};
@@ -161,11 +167,12 @@ Displacement is not constrained to coastlines or administrative boundaries. Cons
 \draw[-Latex] (qa) -- (flag);
 \draw[-Latex] (flag.east) -- node[above,font=\scriptsize]{no} (best.west);
 \draw[-Latex] (flag.south) -- node[right,font=\scriptsize]{yes} (assess.north);
-\draw[-Latex] (assess.east) -| (best.south);
+\draw[-Latex] (assess.east) -| node[pos=.28,above,font=\scriptsize]{location supported} (best.south);
+\draw[-Latex] (assess.south) -- node[right,font=\scriptsize]{not supported} (unresolved.north);
 \draw[-Latex] (best.east) -- (jitter.west);
 \draw[-Latex] (jitter.south) -- (out.north);
 \end{tikzpicture}}
-\caption{Geographical QA and publication privacy are distinct transformations. A flagged location may remain qualified or be excluded from a particular public view; the diagram does not imply that every flagged record is successfully recovered.}
+\caption{Quality screening and public location disclosure are separate decisions. A mismatch in kit allocation can coexist with a valid coordinate; records with unsupported locations remain flagged and need not receive a public map marker.}
 \label{fig:geo-qa}
 \end{figure}
 
@@ -179,52 +186,76 @@ For updates, the publication routine creates a new version draft of an existing 
 The published metadata and persistent identifiers are designed to support indexing and discovery through infrastructures such as OpenAIRE and SoilWise \parencite{soilwise2026faq}. Nevertheless, a Zenodo deposit and CSVW document are evidence of implemented FAIR-oriented mechanisms, not proof of complete FAIR compliance or independently verified discovery in every external catalogue.
 
 \section{Results}
-\subsection{Observed geographical QA outcomes}
-The analysed QA snapshot comprised 6,871 sample records. Three lacked expected-country metadata and could not undergo country-comparison validation. Among the remaining 6,868 assessable records, 492 (7.16\%) were flagged for coordinate-related issues. Table~\ref{tab:qa} gives the mutually reported classes from this snapshot; the percentages in the table use all 6,871 records as their denominator.
+\subsection{Coverage and integration of canonical research data}
+The evaluated canonical snapshot contains 10,554 unique soil samples. Among these, 8,744 samples (82.85\%) have associated photographic records, 6,443 (61.05\%) laboratory measurements and 1,200 (11.37\%) microbial biodiversity results (Table~\ref{tab:coverage}). These are counts of distinct sample identifiers represented in the respective canonical resources, rather than counts of photographs, analytical observations or taxonomic rows.
 
 \begin{table}[htbp]
 \centering\small
-\caption{Geographical QA outcomes in the analysed snapshot ($n=6{,}871$). Classes are those reported by the evaluation; counts sum to the snapshot total.}
-\label{tab:qa}
+\caption{Coverage of additional data domains in the evaluated ECHOREPO canonical snapshot ($n=10{,}554$ unique samples). Percentages are relative to the sample count, and the three additional domains are photographs, laboratory measurements and biodiversity results. Categories describing domain coverage overlap unless stated otherwise.}
+\label{tab:coverage}
 \begin{tabularx}{\linewidth}{@{}Xrr@{}}
 \toprule
-QA outcome & Records & Share (\%) \\
+Canonical data coverage & Samples & Share (\%) \\
 \midrule
-No coordinate-related issue detected & 6,376 & 92.80 \\
-Country could not be assigned & 281 & 4.09 \\
-Coordinate-derived country differed from expected country & 123 & 1.79 \\
-Known default coordinate & 88 & 1.28 \\
-Expected-country metadata unavailable & 3 & 0.04 \\
+Unique soil samples & 10,554 & 100.00 \\
+Samples with photographs & 8,744 & 82.85 \\
+Samples with laboratory measurements & 6,443 & 61.05 \\
+Samples with biodiversity results & 1,200 & 11.37 \\
 \midrule
-Total & 6,871 & 100.00 \\
+At least one additional data domain & 9,876 & 93.58 \\
+At least two additional data domains & 5,514 & 52.25 \\
+Exactly two additional data domains & 4,517 & 42.80 \\
+All three additional data domains & 997 & 9.45 \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-The categories reveal defects that may remain undetected during submission and become evident only when the repository can compare coordinates with broader campaign context. They do \emph{not} establish which device, application behaviour or participant action caused an error. Nor does the number of flagged records measure successful recovery: recovery requires documented corrections or validated outcomes, which have not yet been quantified in this snapshot. It is important to distinguish the demonstrable detection capability from the potential utility of provenance-assisted correction.
+In particular, 5,514 samples (52.25\%) are represented in at least two additional domains, including 997 (9.45\%) linked to all three; 678 (6.42\%) have no associated records in these three domains. This demonstrates cross-domain linkage in an operational data product rather than merely the ability of the schema to represent those links. These proportions describe \emph{canonical publication coverage}, not the completion rate of planned analyses: the canonical laboratory resource omits some parameter rows according to its export rules (including oxide forms and values below the default threshold of 0.01), and the biodiversity export contains taxonomic abundance summaries rather than raw sequencing tables.
+
+\subsection{Geographical and sample-allocation quality flags}
+The geographical and allocation-consistency assessment identified 396 flagged samples. On the assumption that the QA assessment covers the same 10,554-sample snapshot, this corresponds to 3.75\% of all samples (Table~\ref{tab:qa}). The two reported categories are mutually exclusive: 95 records (0.90\%) contain application-default coordinates, indicating that a usable sampling position was not obtained, while 301 records (2.85\%) differ between the country planned for their QR code and the actual sampling country.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Geographical and allocation-consistency flags ($n=10{,}554$, assuming the flag report covers the full canonical snapshot). These are screening outcomes, not confirmed geographical errors.}
+\label{tab:qa}
+\begin{tabularx}{\linewidth}{@{}Xrr@{}}
+\toprule
+Screening outcome & Samples & Share (\%) \\
+\midrule
+Application-default coordinates & 95 & 0.90 \\
+Planned-country mismatch & 301 & 2.85 \\
+Neither of these flags & 10,158 & 96.25 \\
+\midrule
+Total & 10,554 & 100.00 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The 301 country discrepancies cannot be interpreted as GPS failures without further evidence: samples may have been legitimately collected outside their originally allocated country, and kit-allocation metadata may not reflect subsequent redistribution. Conversely, an application-default coordinate does not establish where sampling occurred. Accordingly, 3.75\% is a \emph{flag rate} within these screening categories, not a verified coordinate-error rate or a measurement of successfully recovered records. Investigation and documented resolution would require separate outcome data. This classification is not directly comparable to differently defined or earlier geographical-QA snapshots.
 
 \subsection{Independent publication of research resources}
-The operational repository currently holds approximately 9,000 soil samples and incorporates photographs, laboratory measurements and microbial biodiversity results. These figures provide study context, rather than performance claims or a scalability benchmark. In the published data product, the common sample identifiers and reference codes enable cross-table interpretation independently of the EchoSoil application.
+The canonical sample-centred exports provide an independently interpretable representation of the operational dataset: common sample identifiers link the four sample-related tables, while parameter and method codes connect laboratory results to their definition tables. The observed domain coverage in Table~\ref{tab:coverage} demonstrates that these relations are populated across different forms of evidence; it does not imply that every sample has undergone all planned analyses.
 
-The ECHOREPO Zenodo dataset has a published versioned release, including six CSV resources and \code{file.json}, with a version-specific DOI \parencite{echorepo2026dataset}. The export-and-publish pipeline validates resource structure and produces machine-readable metadata for dataset consumers. This demonstrates deposition and independent retrievability. A claim of successful appearance in a particular SoilWise catalogue record would require a separately verified record identifier; we do not treat expected harvesting as an observed result.
+A published ECHOREPO Zenodo release comprises six canonical CSV resources together with a CSV on the Web metadata document, \code{file.json}, and a version-specific DOI \parencite{echorepo2026dataset}. The export-and-publish workflow checks resource schemas and reference integrity before deposit. This demonstrates independently retrievable, versioned publication products, but the evaluated canonical snapshot must not be assumed to have identical membership to the cited Zenodo release unless its version and extraction date are verified. Appearance in any particular SoilWise catalogue also requires separate confirmation.
 
 \section{Discussion}
 \subsection{Design implications and transferability}
-The key architectural lesson is that citizen-science acquisition and the durable research-data layer can evolve independently. Isolating source-specific ingestion logic allows the participant application to change while stable sample identifiers and canonical resources remain accessible. Progressively enriched records then connect initial observations to analytical data produced later and by different organisations without reducing all evidence to one unwieldy table.
+The central architectural lesson is that citizen-science acquisition and the durable research-data layer can evolve independently. Isolating source-specific ingestion logic allows the participant application to change while sample identifiers and canonical resources remain accessible. The evaluated data show this integration in practice: 52.25\% of samples have records in at least two additional data domains and 9.45\% in all three. These are cross-sectional linkages, not a measurement of how quickly individual samples are enriched over time. The sample-centred model connects evidence produced by different organisations without flattening it into one unwieldy table.
 
-The operational QA snapshot illustrates a second lesson: repository-level validation is important even when collection software implements submission checks. A recovery-oriented design preserves the possibility of correcting an individual defective field while retaining valid observations and associated measurements. However, that advantage must be demonstrated through documented recovery outcomes rather than inferred merely from the existence of provenance fields.
+The QA results illustrate a second lesson: repository-level checks must distinguish position-acquisition failures from disagreements between sampling-allocation metadata and actual collection countries. Of 396 flags, 301 concern planned-country mismatches that may be legitimate rather than erroneous locations. A recovery-oriented design preserves the possibility of correcting an individual defective field while retaining valid observations and associated measurements, but the benefit of recovery requires documented outcomes; it cannot be inferred from detection counts alone.
 
 Third, location validation and location disclosure answer different questions. The repository must first identify the best-supported geographical information, then produce a public representation with explicit loss of precision. Deterministic jitter supports a consistent map representation, but near coasts and borders it produces legitimate visual displacements. The stated 1,000~m radius is an implementation policy, not a general prescription for environmental citizen science or a proof of privacy.
 
 Finally, publication requires more than uploading CSV files. The canonical six-resource structure, relational CSVW metadata, machine-checkable validation and Zenodo versioning provide a durable interface between a continuously changing operational system and downstream users. Such a pattern is broadly transferable, although semantic alignment with disciplinary vocabularies and external catalogues remains an ongoing task.
 
 \subsection{Limitations}
-The evaluation concerns one soil-science deployment and does not compare alternative repository architectures. The canonical model, quality checks and acquisition adapter require adaptation for other domains; architecture-level transferability is not equivalent to a second deployment. The QA assessment is concentrated on geographical problems, without verified counts of recovered records or a systematic attribution of their causes. Other forms of data heterogeneity are managed operationally but are not evaluated quantitatively here.
+The evaluation concerns one soil-science deployment and does not compare alternative repository architectures. The canonical model, quality checks and acquisition adapter require adaptation for other domains; architecture-level transferability is not equivalent to a second deployment. The domain-coverage figures describe the current canonical export and are affected by publication-specific filtering, while the QA figures report only two categories of flags, without independent ground-truth verification, documented recovery outcomes or systematic attribution of causes. The flag percentages assume that the QA assessment covers the same 10,554 samples; this must be confirmed before final submission. Other forms of data heterogeneity are managed operationally but are not evaluated quantitatively here.
 
 Spatial jitter is not a formal anonymisation mechanism; location risk varies with geography and available auxiliary information. Automated photo redaction can miss identifying features, and the current post-mirror workflow does not guarantee protection before a newly mirrored file becomes reachable. FAIR-oriented metadata and versioned deposits facilitate reuse but do not by themselves establish complete semantic interoperability or independently verified SoilWise indexing. Because the operational repository is changing, all reported counts and publications should be interpreted with their stated snapshot or version.
 
 \section{Conclusions}
-ECHOREPO separates participant-facing acquisition from long-term management of heterogeneous soil research data. Stable sample identifiers, provenance-aware quality assurance, explicit public privacy transformations and independently versioned, CSVW-described research outputs provide a practical workflow beyond initial observation collection. The geographical QA results demonstrate the need for repository-level validation; the Zenodo release demonstrates that canonical products can be published independently of the application. The wider contribution is a reusable architectural approach, with soil-specific adapters and schemas and clearly stated limits on recovery, privacy and interoperability claims.
+ECHOREPO separates participant-facing acquisition from the long-term management of heterogeneous soil research data. In an evaluated canonical snapshot of 10,554 samples, 52.25\% are represented in at least two additional data domains, providing direct evidence of sample-centred integration. Quality screening flagged 396 cases of default coordinates or planned-country disagreement, demonstrating why repository-level assessment must distinguish missing positions from potentially legitimate allocation changes. Stable identifiers, provenance-aware QA, controlled privacy transformations and independently versioned, CSVW-described outputs offer a reusable approach, subject to stated limits on recovery, privacy and external interoperability.
 
 \printbibliography
 \end{document}

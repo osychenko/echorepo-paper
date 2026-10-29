@@ -94,11 +94,11 @@ def main() -> None:
                     r"\caption{" + match.group(1) + "}" +
                     r"\label{" + match.group(2) + "}" + ("\\" * 2) + "\n")
         source, moved = float_start.subn(place_caption, source)
-        if moved != 2:
-            raise SystemExit(f"Expected 2 table floats, found {moved}")
+        if moved != 3:
+            raise SystemExit(f"Expected 3 table floats, found {moved}")
         source = source.replace(r"\end{longtable}" + "\n" + r"\end{table}", r"\end{longtable}")
         # Keep scientific content unchanged; this is only a Pandoc math-caption workaround.
-        source = source.replace("($n=6{,}871$)", "(n = 6,871)")
+        source = source.replace("($n=10{,}554$)", "(n = 10,554)")
         intermediate = work / "main-word.tex"
         intermediate.write_text(source, encoding="utf-8")
         args = [
