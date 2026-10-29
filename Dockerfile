@@ -9,6 +9,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     latexmk \
     lmodern \
     pandoc \
+    python3 \
+    poppler-utils \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /paper

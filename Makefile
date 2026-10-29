@@ -1,28 +1,25 @@
 PDF=main.pdf
 IMAGE=echorepo-paper
 
+.PHONY: all docx clean
+
 all:
 	docker build -t $(IMAGE) .
 	docker run --rm \
-		-v $(PWD):/paper \
+		-v "$(PWD):/paper" \
 		$(IMAGE) \
 		latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
 
+# Generates paperA_review.docx, including diagrams and correctly placed bibliography.
 docx:
 	docker build -t $(IMAGE) .
 	docker run --rm \
 		-v "$(PWD):/paper" \
 		$(IMAGE) \
-		pandoc main.tex \
-			--from=latex \
-			--to=docx \
-			--citeproc \
-			--bibliography=echorepo_integrated.bib \
-			--resource-path=/paper:/paper/figures:/paper/sections \
-			-o paperA_review.docx
+		python3 build_docx.py
 
 clean:
 	docker run --rm \
-		-v $(PWD):/paper \
+		-v "$(PWD):/paper" \
 		$(IMAGE) \
 		latexmk -C
