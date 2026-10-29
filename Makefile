@@ -17,12 +17,12 @@ docx:
 			--from=latex \
 			--to=docx \
 			--citeproc \
-			--bibliography=references.bib \
+			--bibliography=echorepo_integrated.bib \
 			--resource-path=/paper:/paper/figures:/paper/sections \
 			-o paperA_review.docx
 
 clean:
 	docker run --rm \
 		-v $(PWD):/paper \
-		echorepo-paper \
+		$(IMAGE) \
 		latexmk -C

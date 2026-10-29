@@ -1,64 +1,260 @@
-\documentclass[11pt,a4paper]{article}
+% ECHOREPO manuscript -- condensed research-infrastructure draft, 29 October 2026
+% Based on https://github.com/osychenko/echorepo-paper (main.tex and sections)
+% All figures are native vector TikZ diagrams; no external graphics files required.
+% Compile: latexmk -pdf -interaction=nonstopmode -halt-on-error main.tex
+% The references are embedded for single-file portability.
+\begin{filecontents*}[overwrite]{echorepo_integrated.bib}
+@article{bonney2009citizenscience,
+  author={Bonney, Rick and Cooper, Caren B. and Dickinson, Janis and Kelling, Steve and Phillips, Tina and Rosenberg, Kenneth V. and Shirk, Jennifer},
+  title={Citizen Science: A Developing Tool for Expanding Science Knowledge and Scientific Literacy},
+  journaltitle={BioScience}, year={2009}, volume={59}, number={11}, pages={977--984}, doi={10.1525/bio.2009.59.11.9}}
+@article{bonney2014nextsteps,
+  author={Bonney, Rick and Shirk, Jennifer L. and Phillips, Tina B. and Wiggins, Andrea and Ballard, Heidi L. and Miller-Rushing, Abraham J. and Parrish, Julia K.},
+  title={Next Steps for Citizen Science}, journaltitle={Science}, year={2014}, volume={343}, number={6178}, pages={1436--1437}, doi={10.1126/science.1251554}}
+@article{kosmala2016quality,
+  author={Kosmala, Margaret and Wiggins, Andrea and Swanson, Alexandra and Simmons, Brooke}, title={Assessing Data Quality in Citizen Science}, journaltitle={Frontiers in Ecology and the Environment}, year={2016}, volume={14}, number={10}, pages={551--560}, doi={10.1002/fee.1436}}
+@article{wang2015citsci,
+  author={Wang, Yiwei and Kaplan, Nicole and Newman, Greg and Scarpino, Russell}, title={{CitSci.org}: A New Model for Managing, Documenting, and Sharing Citizen Science Data}, journaltitle={PLOS Biology}, year={2015}, volume={13}, number={10}, pages={e1002280}, doi={10.1371/journal.pbio.1002280}}
+@article{sullivan2014ebird,
+  author={Sullivan, Brian L. and Aycrigg, Jocelyn L. and Barry, Jessie H. and others}, title={The {eBird} Enterprise: An Integrated Approach to Development and Application of Citizen Science}, journaltitle={Biological Conservation}, year={2014}, volume={169}, pages={31--40}, doi={10.1016/j.biocon.2013.11.003}}
+@article{wilkinson2016fair,
+  author={Wilkinson, Mark D. and Dumontier, Michel and Aalbersberg, IJsbrand Jan and others}, title={The {FAIR} Guiding Principles for Scientific Data Management and Stewardship}, journaltitle={Scientific Data}, year={2016}, volume={3}, pages={160018}, doi={10.1038/sdata.2016.18}}
+@article{peiro2026soil,
+  author={Peiro, Alba and others}, title={Towards Healthier Soils: Insights for Knowledge Building, Co-Creation and Citizen Engagement in Soil Science}, journaltitle={European Journal of Soil Science}, year={2026}, volume={77}, number={5}, eid={e70409}, doi={10.1111/ejss.70409}}
+@online{eea2016biogeo,
+  author={{European Environment Agency}}, title={Biogeographical regions in Europe: 2016 spatial boundaries}, year={2016}, note={EEA 2016 biogeographical-regions layer used for ECHOREPO spatial exploration}}
+@online{w3c2015csvw,
+  author={{W3C}}, title={Metadata Vocabulary for Tabular Data}, year={2015}, url={https://www.w3.org/TR/tabular-metadata/}, urldate={2026-10-29}}
+@online{soilwise2026faq,
+  author={{SoilWise}}, title={Frequently Asked Questions}, year={2026}, url={https://soilwise-he.eu/faq/}, urldate={2026-10-29}}
+@online{zenodo2026versioning,
+  author={{Zenodo}}, title={{DOI} Versioning}, year={2026}, url={https://zenodo.org/help/versioning}, urldate={2026-10-29}}
+@misc{echorepo2026dataset,
+  author={Osychenko, Oleg}, title={{ECHOREPO Soil Dataset: soil observations, parameters, images and biodiversity}}, year={2026}, publisher={Zenodo}, version={v11}, doi={10.5281/zenodo.23195149}}
+@misc{echo2023project,
+  author={{European Commission}}, title={Engaging Citizens in Soil Science: The Road to Healthier Soils}, shorttitle={ECHO}, year={2023}, note={Grant Agreement No. 101112869}, doi={10.3030/101112869}}
+\end{filecontents*}
 
+\documentclass[11pt,a4paper]{article}
 \usepackage[margin=2.5cm]{geometry}
-\usepackage{graphicx}
-\usepackage{booktabs}
-\usepackage{hyperref}\hypersetup{hidelinks}
-\usepackage{microtype}
-\usepackage{csquotes}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
-\usepackage[
-    backend=biber,
-    style=authoryear,
-    maxcitenames=2
-]{biblatex}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{microtype}
+\usepackage{csquotes}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,calc,shapes.geometric,backgrounds}
+\usepackage{caption}
+\usepackage{hyperref}
+\hypersetup{hidelinks}
+\usepackage[backend=biber,style=authoryear,maxcitenames=2]{biblatex}
+\addbibresource{echorepo_integrated.bib}
+\setlength{\parskip}{0.35em}
+\setlength{\parindent}{1.15em}
+\captionsetup{font=small,labelfont=bf}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\repo}{\textsc{ECHOREPO}}
+\newcommand{\unknown}{\emph{not evaluated}}
 
-\addbibresource{references.bib}
-
-\title{
-%From citizen observations to FAIR research data:\\
-%ECHOREPO and a reusable architectural pattern for soil citizen science
-From citizen observations to FAIR research data:\\
-ECHOREPO and a reusable architecture for soil citizen science
-}
-
-\author{Oleg Osychenko et al.\\
-\small Provisional author list}
-
-\date{Internal draft -- September 2026}
+\title{From citizen observations to FAIR research data:\\
+ECHOREPO and a reusable architecture for soil citizen science}
+\author{Oleg Osychenko, Claudia Cappello, C\'eline Laurent, Ivan Rodero, Tanja Mimmo\\[2pt]
+\small Provisional author and affiliation list}
+\date{Internal manuscript draft -- 29 October 2026}
 
 \begin{document}
-
 \maketitle
 
 \begin{abstract}
-Citizen-science projects can generate large volumes of heterogeneous environmental data, but transforming these observations into durable research resources presents challenges that extend beyond data collection. Field observations may contain incomplete or erroneous information, geographical coordinates can raise privacy concerns, and citizen-generated records may subsequently need to be integrated with professional laboratory measurements, images, molecular biodiversity data and external research infrastructures. These requirements are often handled by project-specific pipelines that remain tightly coupled to the original data-collection application.
-
-This paper presents ECHOREPO, an open-source and containerised research-data infrastructure developed in the context of large-scale European soil citizen science. ECHOREPO separates the acquisition layer from long-term research-data management and provides a workflow for ingestion, canonicalisation, quality assurance, provenance preservation, privacy protection, heterogeneous data enrichment and FAIR-oriented publication. The infrastructure integrates citizen observations and images with laboratory measurements and microbial biodiversity data while maintaining a common sample identity. Its production deployment currently manages around 9,000 soil samples and approximately 100 GB of data, with microbial biodiversity accounting for most of the storage and computational requirements.
-
-Particular attention is given to problems encountered in operational citizen-science data, including erroneous or default coordinates, inconsistent observations and the need to recover rather than simply discard problematic records. ECHOREPO combines automated quality-control procedures with provenance-assisted recovery and geographical obfuscation mechanisms. Canonical research outputs are exposed through machine-readable interfaces and deposited in Zenodo with persistent identifiers and structured metadata, enabling subsequent discovery through the SoilWise infrastructure.
-
-Rather than presenting ECHOREPO solely as a soil-specific repository, we derive a set of architectural and operational lessons relevant to other citizen-science projects seeking to transform heterogeneous participant-generated observations into FAIR, privacy-aware and reusable research data.
+Citizen-science observations often acquire scientific value beyond their original collection context, yet long-term management requires integration with later analytical results, assessment of imperfect records, protection of sensitive locations and independent publication. We present \repo, an open-source research-data infrastructure developed for European soil citizen science. The system separates an external participant-facing application from a canonical sample-centred repository, linking observations and photographs to laboratory measurements and microbial biodiversity data. It combines provenance-aware quality assurance with controlled publication views and exports relational tabular resources accompanied by CSV on the Web (CSVW) metadata. In a geographical quality-assurance snapshot, 492 of 6,868 assessable samples (7.16\%) were flagged for coordinate-related problems, illustrating the need for repository-level checks after submission. A published Zenodo dataset demonstrates versioned release of machine-readable resources independently of the operational application. We discuss the design choices and remaining limitations, particularly the distinction between detection and verified recovery, the privacy--utility trade-off in spatial obfuscation, and the boundary between soil-specific and reusable infrastructure components.
 \end{abstract}
+\noindent\textbf{Keywords:} citizen science; FAIR data; soil monitoring; research-data infrastructure; quality assurance; privacy; provenance; interoperability.
 
-\vspace{0.5cm} % Adds space between abstract and keywords
-\noindent \textbf{Keywords:} citizen science; FAIR data; research data infrastructure; soil monitoring; data quality; privacy; provenance; interoperability; open-source software
+\section{Introduction}
+Citizen science enables environmental observations across spatial and temporal scales that are difficult to cover through professional surveys alone \parencite{bonney2009citizenscience,bonney2014nextsteps}. In soil monitoring, participation may also strengthen public engagement and stewardship \parencite{peiro2026soil}. However, the research-data lifecycle often extends beyond the initial observation: physical soil samples can be analysed by laboratories, photographs require management as separate objects, and microbial sequencing produces heterogeneous outputs with different structures and provenance.
 
+Participant-generated data also contain inaccuracies. Coordinates may be missing, recorded at default locations or inconsistent with the expected sampling area; measurements may be incomplete or non-standardised. Public dissemination introduces further requirements, particularly when precise locations or identifiable image content could expose participants. Discarding an entire record because of one defective field may unnecessarily lose otherwise useful scientific evidence.
 
-\input{sections/01_introduction}
-\input{sections/02_system_context}
-\input{sections/03_architecture}
-\input{sections/04_data_model}
-\input{sections/05_data_quality}
-\input{sections/06_privacy}
-\input{sections/07_fair_publication}
-\input{sections/08_evaluation}
-\input{sections/09_reusability}
-\input{sections/10_lessons}
-\input{sections/11_limitations}
-\input{sections/12_conclusions}
+Established systems such as CitSci.org and eBird show how citizen-science services can support curation, quality assurance and data sharing \parencite{wang2015citsci,sullivan2014ebird}. Our focus is a complementary design problem: how to preserve a stable, reusable research representation when the participant-facing acquisition application and subsequent analytical systems are operationally independent.
+
+We present \repo, an open-source, containerised repository developed within the ECHO soil citizen-science project \parencite{echo2023project}. We describe its decoupled architecture, sample-centred data integration, geographical quality control, privacy transformations and FAIR-oriented publication workflow \parencite{wilkinson2016fair}. The paper then examines evidence from an operational deployment and discusses which design principles can be transferred beyond soil monitoring. The contribution is an implemented and documented approach, not a claim that the platform is universally reusable without adaptation.
+
+\section{Materials and methods}
+\subsection{Study context and architecture}
+ECHOREPO was developed within ECHO (Engaging Citizens in Soil Science: The Road to Healthier Soils; Horizon Europe Grant No.~101112869, with UKRI support under Grant No.~10068004). Participants enter observations, coordinates and photographs in the EchoSoil mobile application, which uses an independent Firebase-based backend and authentication system. Dedicated ingestion routines retrieve source records, reconcile identifiers and transform the incoming representation into a canonical research model. The repository is therefore not a direct extension of the mobile application's database.
+
+The architecture separates acquisition, ingestion and harmonisation, canonical storage, and controlled publication (Figure~\ref{fig:architecture}). The implementation uses Flask for web/API access, PostgreSQL for structured research data, MinIO-compatible object storage for images and other files, Keycloak/OpenID Connect for authenticated use, and Docker Compose for deployment. These are concrete implementation choices, not prerequisites of the architectural pattern. The defining boundary is between source-specific adapters and the canonical research-data representation.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  font=\sffamily\footnotesize, >=Latex, line width=.8pt,
+  block/.style={draw=black!70,rounded corners=4pt,align=center,text width=3.15cm,minimum height=1.2cm,fill=blue!7},
+  side/.style={draw=black!60,rounded corners=4pt,align=center,text width=3.15cm,minimum height=.9cm,fill=green!8},
+  arr/.style={-{Latex[length=2.4mm]},thick}]
+\node[block] (acq) at (0,0) {\textbf{Acquisition}\\EchoSoil / Firebase\\observations, photographs};
+\node[block] (ingest) at (4.3,0) {\textbf{Ingestion and QA}\\source adapters\\validation and provenance};
+\node[block] (store) at (8.6,0) {\textbf{Canonical repository}\\linked research data\\and object storage};
+\node[block] (pub) at (12.9,0) {\textbf{Publication}\\privacy and CSV/CSVW\\API and Zenodo};
+\draw[arr] (acq.east) -- (ingest.west);
+\draw[arr] (ingest.east) -- (store.west);
+\draw[arr] (store.east) -- (pub.west);
+\node[side] (lab) at (4.3,-2.25) {\textbf{External analyses}\\XRF; 16S / ITS};
+\draw[arr] (lab.north) -- (ingest.south);
+\node[side] (discover) at (12.9,-2.25) {\textbf{External reuse}\\DOIs and catalogue discovery};
+\draw[arr] (pub.south) -- (discover.north);
+\end{tikzpicture}}
+\caption{Functional architecture of ECHOREPO. Source-specific acquisition and analytical systems feed a stable canonical repository; research products are generated through an explicit publication boundary.}
+\label{fig:architecture}
+\end{figure}
+
+\subsection{Sample-centred data integration}
+A physical soil sample is the principal research entity. Its stable \code{sample\_id} links participant observations, images and subsequent analytical data without requiring those resources to share a common file format or production schedule. The canonical publication model contains six separate CSV tables (Table~\ref{tab:canonical}). Field observations are kept at sample level, while photographs, elemental measurements and biodiversity records are represented as linked resources rather than being flattened into a single table.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Canonical tabular resources in the ECHOREPO publication bundle.}
+\label{tab:canonical}
+\begin{tabularx}{\linewidth}{@{}p{4.7cm}X@{}}
+\toprule
+Resource & Contents and linkage \\
+\midrule
+\code{samples.csv} & Sample-level observations, approximate public coordinates, quality status and licence; one row per sample.\\
+\code{sample\_images.csv} & Linked image identifiers, URLs and descriptive metadata.\\
+\code{sample\_parameters.csv} & Laboratory parameter values, units, method codes and timestamps, linked to samples and definitions.\\
+\code{sample\_biodiversity.csv} & Sample-linked microbial taxonomic results, including marker, read count and relative abundance.\\
+\code{parameter\_definitions.csv} & Analytical parameter codes, descriptions, reference units and semantic identifiers.\\
+\code{analysis\_methods.csv} & Analytical method codes and associated descriptions or method identifiers.\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+In the published table relations, \code{sample\_id} connects the sample-associated resources, while \code{parameter\_code} and \code{method\_code} connect analytical results to their definition tables. Images additionally have \code{image\_id}; biodiversity records contain marker and source-file fields. These identifiers provide more than a shared sample key, but the six-table export does not assert a separate, universal analytical-run identifier. The public biodiversity table reports read counts and relative abundances; specialist OTU matrices may be distributed as distinct analytical products.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{0.94\linewidth}{!}{%
+\begin{tikzpicture}[
+  font=\sffamily\small,>=Latex,line width=.7pt,
+  entity/.style={draw=black!70,rounded corners=3pt,align=center,minimum width=3.75cm,minimum height=.9cm,fill=blue!6},
+  ref/.style={draw=black!65,rounded corners=3pt,align=center,minimum width=3.75cm,minimum height=.9cm,fill=green!8},
+  key/.style={font=\scriptsize,fill=white,inner sep=2pt}]
+\node[entity,fill=blue!14] (sample) at (0,2.5) {\textbf{samples.csv}\\\code{sample\_id}};
+\node[entity] (images) at (-5,0) {\textbf{sample\_images.csv}\\\code{sample\_id}, \code{image\_id}};
+\node[entity] (params) at (0,0) {\textbf{sample\_parameters.csv}\\\code{sample\_id}, parameter / method};
+\node[entity] (bio) at (5,0) {\textbf{sample\_biodiversity.csv}\\\code{sample\_id}, marker / taxon};
+\node[ref] (defs) at (-2.6,-2.4) {\textbf{parameter\_definitions.csv}\\\code{parameter\_code}};
+\node[ref] (meth) at (2.6,-2.4) {\textbf{analysis\_methods.csv}\\\code{method\_code}};
+\draw[-Latex] (images.north) -- (sample.south west);
+\draw[-Latex] (params.north) -- (sample.south);
+\draw[-Latex] (bio.north) -- (sample.south east);
+\draw[-Latex] (params.south west) -- (defs.north east);
+\draw[-Latex] (params.south east) -- (meth.north west);
+\draw[-Latex] (defs.east) -- (meth.west);
+\end{tikzpicture}}
+\caption{Simplified relationships among the six canonical CSV resources. Arrows indicate referential linkage, not a required order of data processing.}
+\label{fig:data-model}
+\end{figure}
+
+Laboratory enrichment may include X-ray fluorescence (XRF) measurements of elemental composition and microbial biodiversity information derived from 16S rRNA gene and internal transcribed spacer (ITS) amplicon sequencing. These outputs may arrive later and from different organisations. Retaining source identifiers, methods, source-file references and relevant timestamps makes progressively enriched records traceable without imposing one uniform representation on heterogeneous analyses.
+
+\subsection{Quality assurance and provenance-assisted assessment}
+The quality-assurance (QA) workflow first checks incoming records and classifies failures instead of deleting entire samples. Geographical checks use the underlying recorded coordinates: coordinates may be unassignable to a country, inconsistent with an expected sampling country, or equal to known application-default values. The corresponding record is flagged for assessment; any defensible correction should be supported by provenance such as QR/sample identity, sample-allocation information, source observations or protected participant-related context. When that evidence is insufficient, the record remains qualified or unresolved rather than being silently corrected. QA is therefore separated into detection, investigation and a possible recovery decision.
+
+The reasons for geographical anomalies cannot be established from these categories alone. Plausible contributors include mobile-device positioning problems, default coordinates supplied by the application, interrupted collection workflows and human data-entry errors. Attribution to a specific device or software defect would require independent diagnostics, such as application logs and validated source histories. Work on citizen-science data quality similarly stresses contextual validation and documented quality-assurance procedures \parencite{kosmala2016quality}.
+
+\subsection{Geographical privacy and image protection}
+Exact source coordinates are retained in the controlled-access environment and assessed for QA before deriving public positions. Public sample coordinates are deterministically displaced within a configurable maximum distance, currently 1,000~m by default. This is a pragmatic compromise intended to reduce precision around individual properties while maintaining regional-scale utility; it is \emph{not} a formally validated anonymity threshold. The field \code{coordinate\_obfuscation\_radius\_m} documents the configured radius in the published sample table.
+
+Displacement is not constrained to coastlines or administrative boundaries. Consequently, a valid sample close to a border may appear in a neighbouring country, or a coastal sample may appear at sea. These visual artefacts do not indicate that the source coordinates failed QA: country-mismatch checks operate on underlying coordinates. ECHOREPO also supports sample exploration by EEA 2016 biogeographical regions \parencite{eea2016biogeo}; membership is precomputed from underlying coordinates rather than inferred from the public marker position. Analysts should not use displaced positions for parcel-level, boundary-sensitive or fine-resolution spatial inference.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{0.94\linewidth}{!}{%
+\begin{tikzpicture}[
+  font=\sffamily\small,>=Latex,line width=.8pt,
+  block/.style={draw=black!70,rounded corners=3pt,fill=blue!6,align=center,minimum width=3.25cm,minimum height=.83cm},
+  decision/.style={draw=black!65,diamond,aspect=2,fill=orange!9,align=center,inner sep=1pt},
+  smallblock/.style={draw=black!65,rounded corners=3pt,fill=green!8,align=center,minimum width=3.25cm,minimum height=.83cm}]
+\node[block] (src) at (0,0) {Source coordinate};
+\node[block] (qa) at (3.6,0) {Geographical QA\\on exact coordinate};
+\node[decision] (flag) at (7.2,0) {Flagged?};
+\node[smallblock] (assess) at (7.2,-2.0) {Provenance-assisted\\assessment / qualification};
+\node[block] (best) at (10.7,0) {Best-supported\\protected location};
+\node[block] (jitter) at (14.3,0) {Deterministic jitter\\($\leq$ 1,000 m default)};
+\node[smallblock] (out) at (14.3,-2.0) {Public coordinates\\and radius metadata};
+\draw[-Latex] (src) -- (qa);
+\draw[-Latex] (qa) -- (flag);
+\draw[-Latex] (flag.east) -- node[above,font=\scriptsize]{no} (best.west);
+\draw[-Latex] (flag.south) -- node[right,font=\scriptsize]{yes} (assess.north);
+\draw[-Latex] (assess.east) -| (best.south);
+\draw[-Latex] (best.east) -- (jitter.west);
+\draw[-Latex] (jitter.south) -- (out.north);
+\end{tikzpicture}}
+\caption{Geographical QA and publication privacy are distinct transformations. A flagged location may remain qualified or be excluded from a particular public view; the diagram does not imply that every flagged record is successfully recovered.}
+\label{fig:geo-qa}
+\end{figure}
+
+Photographs require complementary protection. The MinIO image-redaction workflow locally detects text regions (potentially including street signs, building numbers and registration plates), frontal faces and QR codes, then strongly blurs or masks detected areas. Image re-encoding removes embedded EXIF fields, including GPS metadata. Object-version markers and detection counts support resumable processing and auditing. Detection is imperfect, especially for oblique or small text, non-frontal faces and low-quality images. Moreover, the standalone redactor operates \emph{after} image mirroring; without private staging, it does not guarantee that an unredacted object was never briefly accessible. These are limitations of the current implementation, not guarantees of anonymity.
+
+\subsection{Canonical publication and Zenodo synchronisation}
+Operational tables evolve as new observations and analytical results are ingested. Stable publication products are instead generated through canonical export interfaces. The Zenodo synchronisation routine retrieves an authenticated export bundle from ECHOREPO, extracts and validates the six canonical CSV resources, checks declared schemas and selected reference integrity, and generates a \code{file.json} metadata document following CSV on the Web (CSVW) \parencite{w3c2015csvw}. The metadata describes columns, types, identifiers and primary/foreign-key relationships; it also records dataset-level information and selected semantic mappings. The original ZIP may optionally be retained alongside the individual resources.
+
+For updates, the publication routine creates a new version draft of an existing Zenodo deposition, replaces the files as configured, uploads the validated resources and CSVW document, verifies the remote filenames, and publishes the release. It records the deposition, version and concept identifiers together with publication status and source-file information in a local log. The result is an independently citable snapshot, distinct from the mutable operational database \parencite{zenodo2026versioning,echorepo2026dataset}.
+
+The published metadata and persistent identifiers are designed to support indexing and discovery through infrastructures such as OpenAIRE and SoilWise \parencite{soilwise2026faq}. Nevertheless, a Zenodo deposit and CSVW document are evidence of implemented FAIR-oriented mechanisms, not proof of complete FAIR compliance or independently verified discovery in every external catalogue.
+
+\section{Results}
+\subsection{Observed geographical QA outcomes}
+The analysed QA snapshot comprised 6,871 sample records. Three lacked expected-country metadata and could not undergo country-comparison validation. Among the remaining 6,868 assessable records, 492 (7.16\%) were flagged for coordinate-related issues. Table~\ref{tab:qa} gives the mutually reported classes from this snapshot; the percentages in the table use all 6,871 records as their denominator.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Geographical QA outcomes in the analysed snapshot ($n=6{,}871$). Classes are those reported by the evaluation; counts sum to the snapshot total.}
+\label{tab:qa}
+\begin{tabularx}{\linewidth}{@{}Xrr@{}}
+\toprule
+QA outcome & Records & Share (\%) \\
+\midrule
+No coordinate-related issue detected & 6,376 & 92.80 \\
+Country could not be assigned & 281 & 4.09 \\
+Coordinate-derived country differed from expected country & 123 & 1.79 \\
+Known default coordinate & 88 & 1.28 \\
+Expected-country metadata unavailable & 3 & 0.04 \\
+\midrule
+Total & 6,871 & 100.00 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The categories reveal defects that may remain undetected during submission and become evident only when the repository can compare coordinates with broader campaign context. They do \emph{not} establish which device, application behaviour or participant action caused an error. Nor does the number of flagged records measure successful recovery: recovery requires documented corrections or validated outcomes, which have not yet been quantified in this snapshot. It is important to distinguish the demonstrable detection capability from the potential utility of provenance-assisted correction.
+
+\subsection{Independent publication of research resources}
+The operational repository currently holds approximately 9,000 soil samples and incorporates photographs, laboratory measurements and microbial biodiversity results. These figures provide study context, rather than performance claims or a scalability benchmark. In the published data product, the common sample identifiers and reference codes enable cross-table interpretation independently of the EchoSoil application.
+
+The ECHOREPO Zenodo dataset has a published versioned release, including six CSV resources and \code{file.json}, with a version-specific DOI \parencite{echorepo2026dataset}. The export-and-publish pipeline validates resource structure and produces machine-readable metadata for dataset consumers. This demonstrates deposition and independent retrievability. A claim of successful appearance in a particular SoilWise catalogue record would require a separately verified record identifier; we do not treat expected harvesting as an observed result.
+
+\section{Discussion}
+\subsection{Design implications and transferability}
+The key architectural lesson is that citizen-science acquisition and the durable research-data layer can evolve independently. Isolating source-specific ingestion logic allows the participant application to change while stable sample identifiers and canonical resources remain accessible. Progressively enriched records then connect initial observations to analytical data produced later and by different organisations without reducing all evidence to one unwieldy table.
+
+The operational QA snapshot illustrates a second lesson: repository-level validation is important even when collection software implements submission checks. A recovery-oriented design preserves the possibility of correcting an individual defective field while retaining valid observations and associated measurements. However, that advantage must be demonstrated through documented recovery outcomes rather than inferred merely from the existence of provenance fields.
+
+Third, location validation and location disclosure answer different questions. The repository must first identify the best-supported geographical information, then produce a public representation with explicit loss of precision. Deterministic jitter supports a consistent map representation, but near coasts and borders it produces legitimate visual displacements. The stated 1,000~m radius is an implementation policy, not a general prescription for environmental citizen science or a proof of privacy.
+
+Finally, publication requires more than uploading CSV files. The canonical six-resource structure, relational CSVW metadata, machine-checkable validation and Zenodo versioning provide a durable interface between a continuously changing operational system and downstream users. Such a pattern is broadly transferable, although semantic alignment with disciplinary vocabularies and external catalogues remains an ongoing task.
+
+\subsection{Limitations}
+The evaluation concerns one soil-science deployment and does not compare alternative repository architectures. The canonical model, quality checks and acquisition adapter require adaptation for other domains; architecture-level transferability is not equivalent to a second deployment. The QA assessment is concentrated on geographical problems, without verified counts of recovered records or a systematic attribution of their causes. Other forms of data heterogeneity are managed operationally but are not evaluated quantitatively here.
+
+Spatial jitter is not a formal anonymisation mechanism; location risk varies with geography and available auxiliary information. Automated photo redaction can miss identifying features, and the current post-mirror workflow does not guarantee protection before a newly mirrored file becomes reachable. FAIR-oriented metadata and versioned deposits facilitate reuse but do not by themselves establish complete semantic interoperability or independently verified SoilWise indexing. Because the operational repository is changing, all reported counts and publications should be interpreted with their stated snapshot or version.
+
+\section{Conclusions}
+ECHOREPO separates participant-facing acquisition from long-term management of heterogeneous soil research data. Stable sample identifiers, provenance-aware quality assurance, explicit public privacy transformations and independently versioned, CSVW-described research outputs provide a practical workflow beyond initial observation collection. The geographical QA results demonstrate the need for repository-level validation; the Zenodo release demonstrates that canonical products can be published independently of the application. The wider contribution is a reusable architectural approach, with soil-specific adapters and schemas and clearly stated limits on recovery, privacy and interoperability claims.
 
 \printbibliography
-
 \end{document}
